@@ -3,7 +3,11 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 
+const connectDB = require("./db");
+
 const exercise = require("./routes/exercise");
+
+connectDB();
 
 app.use(cors());
 app.use(express.static("public"));

@@ -14,5 +14,7 @@ app.get("/", (req, res) => {
 app.use("/exercise", exercise);
 
 const listener = app.listen(process.env.PORT || 3000, () => {
-  console.log("Your app is listening on port " + listener.address().port);
+  console.log(
+    `Your app is listening on: http://localhost:${listener.address().port}`
+  );
 });

@@ -17,4 +17,21 @@ router.post("/new-user", async (req, res) => {
   }
 });
 
+router.get("/users", async (req, res) => {
+  try {
+    const allUsers = await User.find({}).select("_id username");
+    res.send(allUsers);
+  } catch (e) {
+    res.send(e);
+  }
+});
+
+router.post("/add", async (req, res) => {
+  try {
+    const { userId, description, duration, date } = req.body;
+  } catch (e) {
+    res.send(e);
+  }
+});
+
 module.exports = router;

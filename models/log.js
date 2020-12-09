@@ -1,10 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const exerciseLogSchema = new Schema({
-  _id: {
-    type: Schema.Types.ObjectId,
-    required: [true, "userId is required"],
-  },
+const logSchema = new Schema({
   description: {
     type: String,
     required: [true, "exercie description is required"],
@@ -15,10 +11,10 @@ const exerciseLogSchema = new Schema({
   },
   date: {
     type: Date,
-    default: new Date(),
+    default: new Date().toDateString(),
   },
 });
 
-const ExerciseLog = model("ExerciseLog", exerciseLogSchema);
+const Log = model("Log", logSchema);
 
-module.exports = ExerciseLog;
+module.exports = Log;

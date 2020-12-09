@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const User = require("../models/user");
+const Log = require("../models/log");
 
 router.post("/new-user", async (req, res) => {
   try {
@@ -28,7 +29,35 @@ router.get("/users", async (req, res) => {
 
 router.post("/add", async (req, res) => {
   try {
-    const { userId, description, duration, date } = req.body;
+    let { date } = req.body;
+    const { userId, description, duration } = req.body;
+
+    let user = await User.find({ _id: userId });
+
+    if (!date) {
+      date = new Date().toDateString();
+    }
+
+    const exerciseLog = {
+      description,
+      duration,
+      date,
+    };
+
+    if (user.log) {
+      let log = await Log.findByIdAndUpdate(
+        { _id: userId },
+        { log: { $push: exerciseLog } }
+      );
+      return res.send(log);
+    }
+
+    let newLog = new Log(exerciseLog);
+    newLog = await newLog.save();
+
+    user = await User.findByIdAndUpdate({ _id: userId }, { log: newLog._id });
+
+    res.send(newLog);
   } catch (e) {
     res.send(e);
   }

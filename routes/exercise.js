@@ -51,9 +51,12 @@ router.post("/add", async (req, res) => {
         { _id: user.log },
         {
           $push: { exercise: exerciseLog.exercise },
-        }
+        },
+        { new: true }
       );
-      return res.send(log);
+
+      const last = log.exercise.length - 1;
+      return res.send(log.exercise[last]);
     }
 
     let newLog = new Log(exerciseLog);

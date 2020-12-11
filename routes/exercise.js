@@ -56,7 +56,19 @@ router.post("/add", async (req, res) => {
       );
 
       const last = log.exercise.length - 1;
-      return res.send(log.exercise[last]);
+      const { date, duration, description } = log.exercise[last];
+
+      const { _id, username } = user;
+
+      const responseObj = {
+        _id,
+        username,
+        date,
+        duration,
+        description,
+      };
+
+      return res.json(responseObj);
     }
 
     let newLog = new Log(exerciseLog);

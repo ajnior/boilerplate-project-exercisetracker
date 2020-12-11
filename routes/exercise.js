@@ -33,9 +33,11 @@ router.post("/add", async (req, res) => {
     const { userId, description, duration } = req.body;
 
     let user = await User.findOne({ _id: userId });
+    const { _id, username } = user;
 
+    /* Sets date to null, because null is a valid Date type for mongoose and does't trigger default value */
     if (!date) {
-      date = new Date().toDateString();
+      date = undefined;
     }
 
     const exerciseLog = {
@@ -44,6 +46,14 @@ router.post("/add", async (req, res) => {
         duration,
         date,
       },
+    };
+
+    const responseObj = {
+      _id,
+      username,
+      date,
+      duration,
+      description,
     };
 
     if (user.log) {
@@ -56,27 +66,20 @@ router.post("/add", async (req, res) => {
       );
 
       const last = log.exercise.length - 1;
-      const { date, duration, description } = log.exercise[last];
+      const { date } = log.exercise[last];
 
-      const { _id, username } = user;
-
-      const responseObj = {
-        _id,
-        username,
-        date,
-        duration,
-        description,
-      };
-
-      return res.json(responseObj);
+      return res.json({ ...responseObj, date });
     }
 
     let newLog = new Log(exerciseLog);
     newLog = await newLog.save();
 
+    const last = newLog.exercise.length - 1;
+    const newLogDate = newLog.exercise[last].date;
+
     user = await User.findByIdAndUpdate({ _id: userId }, { log: newLog._id });
 
-    res.send(newLog);
+    res.json({ ...responseObj, date: newLogDate });
   } catch (e) {
     res.send(e);
   }

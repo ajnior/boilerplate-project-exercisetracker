@@ -11,7 +11,7 @@ const ExerciseSchema = new Schema({
   },
   date: {
     type: Date,
-    default: new Date().toDateString(),
+    default: Date.now,
   },
 });
 

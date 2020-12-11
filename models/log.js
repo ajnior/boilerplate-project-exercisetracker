@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const logSchema = new Schema({
+const ExerciseSchema = new Schema({
   description: {
     type: String,
     required: [true, "exercie description is required"],
@@ -15,6 +15,12 @@ const logSchema = new Schema({
   },
 });
 
-const Log = model("Log", logSchema);
+const LogSchema = new Schema({
+  exercise: {
+    type: [ExerciseSchema],
+  },
+});
+
+const Log = model("Log", LogSchema);
 
 module.exports = Log;

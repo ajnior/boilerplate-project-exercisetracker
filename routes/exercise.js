@@ -32,22 +32,26 @@ router.post("/add", async (req, res) => {
     let { date } = req.body;
     const { userId, description, duration } = req.body;
 
-    let user = await User.find({ _id: userId });
+    let user = await User.findOne({ _id: userId });
 
     if (!date) {
       date = new Date().toDateString();
     }
 
     const exerciseLog = {
-      description,
-      duration,
-      date,
+      exercise: {
+        description,
+        duration,
+        date,
+      },
     };
 
     if (user.log) {
       let log = await Log.findByIdAndUpdate(
-        { _id: userId },
-        { log: { $push: exerciseLog } }
+        { _id: user.log },
+        {
+          $push: { exercise: exerciseLog.exercise },
+        }
       );
       return res.send(log);
     }

@@ -85,4 +85,23 @@ router.post("/add", async (req, res) => {
   }
 });
 
+router.get("/log", async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) return res.send("userId is required.");
+
+  try {
+    const user = await User.findOne({ _id: userId }).populate("log");
+
+    res.json({
+      _id: user._id,
+      username: user.username,
+      count: user.log.exercise.length,
+      log: user.log.exercise,
+    });
+  } catch (e) {
+    res.send("User not found.");
+  }
+});
+
 module.exports = router;

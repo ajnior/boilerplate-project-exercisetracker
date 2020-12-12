@@ -43,7 +43,7 @@ router.post("/add", async (req, res) => {
     const exerciseLog = {
       exercise: {
         description,
-        duration,
+        duration: Number(duration),
         date,
       },
     };
@@ -52,7 +52,7 @@ router.post("/add", async (req, res) => {
       _id,
       username,
       date,
-      duration,
+      duration: Number(duration),
       description,
     };
 
@@ -68,7 +68,7 @@ router.post("/add", async (req, res) => {
       const last = log.exercise.length - 1;
       const { date } = log.exercise[last];
 
-      return res.json({ ...responseObj, date });
+      return res.json({ ...responseObj, date: date.toDateString() });
     }
 
     let newLog = new Log(exerciseLog);
@@ -79,7 +79,7 @@ router.post("/add", async (req, res) => {
 
     user = await User.findByIdAndUpdate({ _id: userId }, { log: newLog._id });
 
-    res.json({ ...responseObj, date: newLogDate });
+    res.json({ ...responseObj, date: newLogDate.toDateString() });
   } catch (e) {
     res.send(e);
   }

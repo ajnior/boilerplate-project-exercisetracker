@@ -86,12 +86,52 @@ router.post("/add", async (req, res) => {
 });
 
 router.get("/log", async (req, res) => {
-  const { userId } = req.query;
+  const { userId, limit, from, to } = req.query;
+
+  const dateFrom = new Date(from).getTime();
+  const dateTo = new Date(to).getTime();
 
   if (!userId) return res.send("userId is required.");
 
   try {
     const user = await User.findOne({ _id: userId }).populate("log");
+    const log = await Log.findOne({ _id: user.log });
+    const { exercise: exercises } = log;
+
+    let filteredLogs = [];
+
+    if (to) {
+      filteredLogs = [
+        ...exercises.filter(
+          (exercise) => new Date(exercise.date).getTime() <= dateTo
+        ),
+      ];
+    }
+
+    if (from) {
+      const filterList = filteredLogs.length ? filteredLogs : exercises;
+      const onlyDateFrom = filterList.filter(
+        (exercise) => new Date(exercise.date).getTime() >= dateFrom
+      );
+      filteredLogs = [...onlyDateFrom];
+    }
+
+    if (limit) {
+      const temp = [...filteredLogs];
+      filteredLogs = [];
+      for (let i = 0; i < limit; i++) {
+        filteredLogs.push(temp[i]);
+      }
+    }
+
+    if (filteredLogs.length) {
+      return res.json({
+        _id: user._id,
+        username: user.username,
+        count: filteredLogs.length,
+        log: filteredLogs,
+      });
+    }
 
     res.json({
       _id: user._id,
@@ -100,6 +140,7 @@ router.get("/log", async (req, res) => {
       log: user.log.exercise,
     });
   } catch (e) {
+    console.log(e);
     res.send("User not found.");
   }
 });
